@@ -11,7 +11,9 @@ import java.io.Serializable;
  * Created by sl0b on 23/03/16.
  */
 public class Movie implements Serializable {
-    private static final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185";
+    private static final String POSTER_BASE_URL = "http://image.tmdb.org/t/p";
+    private static final String POSTER_REZ = "/w185";
+    private static final String BACKDROP_REZ = "/w342";
 
     @SerializedName("id")
     private int mId;
@@ -24,6 +26,9 @@ public class Movie implements Serializable {
 
     @SerializedName("poster_path")
     private String mPosterPath;
+
+    @SerializedName("backdrop_path")
+    private String mBackdrop;
 
     @SerializedName("release_date")
     private String mReleaseDate;
@@ -48,9 +53,18 @@ public class Movie implements Serializable {
         return TextUtils.isEmpty(mOverview) ? "" : mOverview;
     }
 
+    /**
+     * Get the poster or the brackdrop url
+     *
+     * @param isPoster true is you want the poster url, false for the backdrop.
+     */
     @NonNull
-    public String getPosterImageUrl() {
-        return TextUtils.isEmpty(mPosterPath) ? "" : POSTER_BASE_URL + mPosterPath;
+    public String getImageUrl(boolean isPoster) {
+        if (isPoster) {
+            return TextUtils.isEmpty(mPosterPath) ? "" : POSTER_BASE_URL + POSTER_REZ + mPosterPath;
+        } else {
+            return TextUtils.isEmpty(mBackdrop) ? "" : POSTER_BASE_URL + BACKDROP_REZ + mBackdrop;
+        }
     }
 
     @NonNull
