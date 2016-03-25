@@ -1,5 +1,6 @@
 package com.example.android.project1;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.google.gson.Gson;
@@ -51,15 +53,15 @@ public class SortPosterFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_posters);
         gridView.setAdapter(mMoviesAdapter);
 
-        /*gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String forecast = mMoviesAdapter.getItem(position);
+                String movie = new Gson().toJson(mMoviesAdapter.getItem(position));
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, forecast);
+                        .putExtra("MOVIE", movie);
                 startActivity(intent);
             }
-        });*/
+        });
 
         return rootView;
     }

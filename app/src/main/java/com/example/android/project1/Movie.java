@@ -34,7 +34,7 @@ public class Movie implements Serializable {
     @SerializedName("vote_count")
     private int mVoteCount;
 
-    public int getMovieId() {
+    public int getId() {
         return mId;
     }
 
