@@ -2,7 +2,6 @@ package com.example.android.project1;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +15,15 @@ import java.util.List;
 /**
  * Created by sl0b on 23/03/16.
  */
-public class MovieAdapter extends ArrayAdapter<String> {
+public class MovieAdapter extends ArrayAdapter<Movie> {
 
     private final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
     Context context;
     int layoutResId;
-    List<String> data = null;
+    List<Movie> data = null;
 
-    public MovieAdapter(Context context, int layoutResId, List<String> data) {
+    public MovieAdapter(Context context, int layoutResId, List<Movie> data) {
         super(context, layoutResId, data);
         this.layoutResId = layoutResId;
         this.context = context;
@@ -50,8 +49,7 @@ public class MovieAdapter extends ArrayAdapter<String> {
             holder = (MovieHolder)convertView.getTag();
         }
 
-        String url = data.get(position);
-        Log.v(LOG_TAG, "URL " + url);
+        String url = data.get(position).getPosterImageUrl();
         Picasso.with(this.context).load(url).into(holder.poster);
 
         return convertView;

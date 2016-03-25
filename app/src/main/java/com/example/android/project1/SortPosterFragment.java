@@ -44,7 +44,7 @@ public class SortPosterFragment extends Fragment {
         mMoviesAdapter = new MovieAdapter(
                 getActivity(),
                 R.layout.list_poster,
-                new ArrayList<String>());
+                new ArrayList<Movie>());
 
         View rootView = inflater.inflate(R.layout.posters_fragment, container, false);
 
@@ -92,20 +92,15 @@ public class SortPosterFragment extends Fragment {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-            // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-
             try {
-                final String FORECAST_BASE_URL = "http://api.themoviedb.org/3/movie";
+                final String MOVIEDB_BASE_URL = "http://api.themoviedb.org/3/movie";
 
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
                         .appendPath(params[0])
-                        .appendQueryParameter("api_key", /*YOUR_API_KEY*/)
+                        .appendQueryParameter("api_key", BuildConfig.MOVIEDB_KEY)
                         .build();
 
                 URL url = new URL(builtUri.toString());
-
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 // Create the request to theMovieDB, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -121,8 +116,6 @@ public class SortPosterFragment extends Fragment {
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 Movies movies = new Gson().fromJson(reader, Movies.class);
-
-                Log.v(LOG_TAG, movies.getMovies()[0].getOverview());
 
                 return movies.getMovies();
             } catch (IOException e) {
@@ -147,9 +140,8 @@ public class SortPosterFragment extends Fragment {
             if (result != null) {
                 mMoviesAdapter.clear();
                 for(Movie movie : result) {
-                    mMoviesAdapter.add(movie.getPosterImageUrl());
+                    mMoviesAdapter.add(movie);
                 }
-                // New data is back from the server.  Hooray!
             }
         }
     }
@@ -157,7 +149,7 @@ public class SortPosterFragment extends Fragment {
     private static class Movies {
         @SuppressWarnings("unused")
         @SerializedName("page")
-        private int mResultPage;
+        private int mPage;
 
         @SuppressWarnings("unused")
         @SerializedName("results")
@@ -167,8 +159,8 @@ public class SortPosterFragment extends Fragment {
             return mMovies;
         }
 
-        public int getResultPage() {
-            return mResultPage;
+        public int getPage() {
+            return mPage;
         }
     }
 }

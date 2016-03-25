@@ -11,10 +11,10 @@ import java.io.Serializable;
  * Created by sl0b on 23/03/16.
  */
 public class Movie implements Serializable {
-    private static final String POSTER_IMAGE_URL_PREFIX = "http://image.tmdb.org/t/p/w185";
+    private static final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185";
 
     @SerializedName("id")
-    private int mMovieId;
+    private int mId;
 
     @SerializedName("title")
     private String mTitle;
@@ -23,7 +23,7 @@ public class Movie implements Serializable {
     private String mOverview;
 
     @SerializedName("poster_path")
-    private String mPosterImageUrl;
+    private String mPosterPath;
 
     @SerializedName("release_date")
     private String mReleaseDate;
@@ -35,7 +35,7 @@ public class Movie implements Serializable {
     private int mVoteCount;
 
     public int getMovieId() {
-        return mMovieId;
+        return mId;
     }
 
     @NonNull
@@ -50,7 +50,7 @@ public class Movie implements Serializable {
 
     @NonNull
     public String getPosterImageUrl() {
-        return TextUtils.isEmpty(mPosterImageUrl) ? "" : POSTER_IMAGE_URL_PREFIX + mPosterImageUrl;
+        return TextUtils.isEmpty(mPosterPath) ? "" : POSTER_BASE_URL + mPosterPath;
     }
 
     @NonNull
