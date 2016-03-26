@@ -1,6 +1,7 @@
 package com.example.android.project1;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -53,7 +55,15 @@ public class DetailActivity extends AppCompatActivity {
 
             // Backdrop (top image)
             ImageView backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
-            Picasso.with(getActivity()).load(mMovie.getImageUrl(false)).into(backdrop);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                Picasso.with(getActivity()).load(mMovie.getImageUrl(false, true)).into(backdrop);
+            } else {
+                Picasso.with(getActivity()).load(mMovie.getImageUrl(false, false)).into(backdrop);
+            }
+
+            final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
+
+            scrollView.postDelayed(new Runnable() { @Override public void run() { scrollView.fullScroll(View.FOCUS_DOWN); } }, 1000);
 
             // Movie title
             ((TextView) rootView.findViewById(R.id.movie_title))

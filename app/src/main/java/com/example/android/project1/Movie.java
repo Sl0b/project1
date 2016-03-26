@@ -14,6 +14,7 @@ public class Movie implements Serializable {
     private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String POSTER_REZ = "/w185";
     private static final String BACKDROP_REZ = "/w342";
+    private static final String BACKDROP_LANDSCAPE_REZ = "/w500";
 
     @SerializedName("id")
     private int mId;
@@ -57,11 +58,14 @@ public class Movie implements Serializable {
      * Get the poster or the brackdrop url
      *
      * @param isPoster true is you want the poster url, false for the backdrop.
+     * @param isLandscape true if the device is in landscape, false for portrait.
      */
     @NonNull
-    public String getImageUrl(boolean isPoster) {
+    public String getImageUrl(boolean isPoster, boolean isLandscape) {
         if (isPoster) {
             return TextUtils.isEmpty(mPosterPath) ? "" : IMG_BASE_URL + POSTER_REZ + mPosterPath;
+        } else if (isLandscape) {
+            return TextUtils.isEmpty(mBackdrop) ? "" : IMG_BASE_URL + BACKDROP_LANDSCAPE_REZ + mBackdrop;
         } else {
             return TextUtils.isEmpty(mBackdrop) ? "" : IMG_BASE_URL + BACKDROP_REZ + mBackdrop;
         }

@@ -1,6 +1,7 @@
 package com.example.android.project1;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,7 +83,14 @@ public class SortPosterFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.posters_fragment, container, false);
 
+        // Make it 3 columns of posters if the device is in landscape
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_posters);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            gridView.setNumColumns(3);
+        } else {
+            gridView.setNumColumns(2);
+        }
+
         gridView.setAdapter(mMoviesAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
