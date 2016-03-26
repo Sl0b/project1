@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Created by sl0b on 23/03/16.
  */
 public class Movie implements Serializable {
-    private static final String POSTER_BASE_URL = "http://image.tmdb.org/t/p";
+    private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String POSTER_REZ = "/w185";
     private static final String BACKDROP_REZ = "/w342";
 
@@ -61,9 +61,9 @@ public class Movie implements Serializable {
     @NonNull
     public String getImageUrl(boolean isPoster) {
         if (isPoster) {
-            return TextUtils.isEmpty(mPosterPath) ? "" : POSTER_BASE_URL + POSTER_REZ + mPosterPath;
+            return TextUtils.isEmpty(mPosterPath) ? "" : IMG_BASE_URL + POSTER_REZ + mPosterPath;
         } else {
-            return TextUtils.isEmpty(mBackdrop) ? "" : POSTER_BASE_URL + BACKDROP_REZ + mBackdrop;
+            return TextUtils.isEmpty(mBackdrop) ? "" : IMG_BASE_URL + BACKDROP_REZ + mBackdrop;
         }
     }
 

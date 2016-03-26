@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -35,6 +39,34 @@ public class SortPosterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Add this line in order for this fragment to handle menu events.
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.menu_sort_popular) {
+            updateMovies(true);
+            getActivity().setTitle(R.string.title_popular);
+            Toast.makeText(getActivity().getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.menu_sort_rating) {
+            updateMovies(false);
+            getActivity().setTitle(R.string.title_rated);
+            Toast.makeText(getActivity().getApplicationContext(), item.getTitle()   , Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -66,16 +98,19 @@ public class SortPosterFragment extends Fragment {
         return rootView;
     }
 
-    private void updateMovies() {
+    private void updateMovies(boolean popular) {
         FetchMoviesPostersTask postersTask = new FetchMoviesPostersTask();
-        String sort = "top_rated";
-        postersTask.execute(sort);
+        if (popular) {
+            postersTask.execute("popular");
+        } else {
+            postersTask.execute("top_rated");
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateMovies();
+        updateMovies(true);
     }
 
     public class FetchMoviesPostersTask extends AsyncTask<String, Void, Movie[]> {
