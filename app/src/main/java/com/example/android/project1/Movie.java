@@ -1,16 +1,16 @@
 package com.example.android.project1;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
 /**
  * Created by sl0b on 23/03/16.
  */
-public class Movie implements Serializable {
+public class Movie implements Parcelable {
     private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p";
     private static final String POSTER_REZ = "/w185";
     private static final String BACKDROP_REZ = "/w342";
@@ -83,4 +83,46 @@ public class Movie implements Serializable {
     public int getVoteCount() {
         return mVoteCount;
     }
+
+    // Parcelable stuff
+    private Movie(Parcel in) {
+        this.mId = in.readInt();
+        this.mTitle = in.readString();
+        this.mOverview = in.readString();
+        this.mPosterPath = in.readString();
+        this.mBackdrop = in.readString();
+        this.mReleaseDate = in.readString();
+        this.mVoteAverage = in.readFloat();
+        this.mVoteCount = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
+        dest.writeString(mTitle);
+        dest.writeString(mOverview);
+        dest.writeString(mPosterPath);
+        dest.writeString(mBackdrop);
+        dest.writeString(mReleaseDate);
+        dest.writeFloat(mVoteAverage);
+        dest.writeInt(mVoteCount);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
+    static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

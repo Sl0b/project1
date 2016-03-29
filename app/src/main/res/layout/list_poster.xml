@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_poster_imageview"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scaleType="centerCrop"
-    android:adjustViewBounds="true" />
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/list_poster_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/poster_description"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/textview_height"
+        android:layout_below="@id/list_poster_imageview"
+        android:layout_marginTop="@dimen/textview_margin_top"
+        android:background="@color/colorPrimaryTransclucent"
+        android:ellipsize="marquee"
+        android:padding="@dimen/textview_padding"
+        android:singleLine="true"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>

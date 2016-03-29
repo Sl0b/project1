@@ -2,6 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Details layout -->
     <dimen name="overview_top_margin">16dp</dimen>
     <dimen name="details_padding">16dp</dimen>
+
+    <!-- Poster layout -->
+    <dimen name="textview_height">40dp</dimen>
+    <dimen name="textview_margin_top">-40dp</dimen>
+    <dimen name="textview_padding">8dp</dimen>
+    <dimen name="gridview_spacing">4dp</dimen>
+    <dimen name="gridview_column_width">160dp</dimen>
 </resources>

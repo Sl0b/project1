@@ -8,6 +8,9 @@
         android:id="@+id/gridview_posters"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2" />
+        android:columnWidth="@dimen/gridview_column_width"
+        android:numColumns="auto_fit"
+        android:horizontalSpacing="@dimen/gridview_spacing"
+        android:verticalSpacing="@dimen/gridview_spacing" />
 
 </FrameLayout>

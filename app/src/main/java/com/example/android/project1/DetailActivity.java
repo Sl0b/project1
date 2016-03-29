@@ -56,9 +56,15 @@ public class DetailActivity extends AppCompatActivity {
             // Backdrop (top image)
             ImageView backdrop = (ImageView) rootView.findViewById(R.id.backdrop);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                Picasso.with(getActivity()).load(mMovie.getImageUrl(false, true)).into(backdrop);
+                Picasso.with(getActivity())
+                        .load(mMovie.getImageUrl(false, true))
+                        .error(R.drawable.backdrop_error)
+                        .into(backdrop);
             } else {
-                Picasso.with(getActivity()).load(mMovie.getImageUrl(false, false)).into(backdrop);
+                Picasso.with(getActivity())
+                        .load(mMovie.getImageUrl(false, false))
+                        .error(R.drawable.backdrop_error)
+                        .into(backdrop);
             }
 
             final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);

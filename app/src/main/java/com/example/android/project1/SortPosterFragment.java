@@ -1,7 +1,8 @@
 package com.example.android.project1;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -51,20 +51,20 @@ public class SortPosterFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
         int id = item.getItemId();
         if (id == R.id.menu_sort_popular) {
             updateMovies(true);
-            getActivity().setTitle(R.string.title_popular);
-            Toast.makeText(getActivity().getApplicationContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
+            editor.putBoolean(getString(R.string.sort_pref), true);
+            editor.apply();
             return true;
         }
         if (id == R.id.menu_sort_rating) {
             updateMovies(false);
-            getActivity().setTitle(R.string.title_rated);
-            Toast.makeText(getActivity().getApplicationContext(), item.getTitle()   , Toast.LENGTH_SHORT).show();
+            editor.putBoolean(getString(R.string.sort_pref), false);
+            editor.apply();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -83,13 +83,7 @@ public class SortPosterFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.posters_fragment, container, false);
 
-        // Make it 3 columns of posters if the device is in landscape
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_posters);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridView.setNumColumns(3);
-        } else {
-            gridView.setNumColumns(2);
-        }
 
         gridView.setAdapter(mMoviesAdapter);
 
@@ -110,15 +104,19 @@ public class SortPosterFragment extends Fragment {
         FetchMoviesPostersTask postersTask = new FetchMoviesPostersTask();
         if (popular) {
             postersTask.execute("popular");
+            getActivity().setTitle(R.string.title_popular);
         } else {
             postersTask.execute("top_rated");
+            getActivity().setTitle(R.string.title_rated);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateMovies(true);
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        boolean isPopular = sharedPref.getBoolean(getString(R.string.sort_pref), true);
+        updateMovies(isPopular);
     }
 
     public class FetchMoviesPostersTask extends AsyncTask<String, Void, Movie[]> {
