@@ -3,11 +3,9 @@ package com.example.android.project1;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,20 +16,20 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
  * Created by sl0b on 23/03/16.
  */
 public class SortPosterFragment extends Fragment {
+
+    private static FetchMoviesTask fetchMoviesTask;
+    private Menu menu;
+
+    public final static String MOST_POPULAR = "popular";
+    public final static String TOP_RATED = "top_rated";
+    public final static String FAVORITES = "favorites";
 
     private MovieAdapter mMoviesAdapter;
 
@@ -42,6 +40,24 @@ public class SortPosterFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((fetchMoviesTask != null) && (fetchMoviesTask.getStatus() == AsyncTask.Status.RUNNING)) {
+            fetchMoviesTask.setActivity(this);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem spinner = menu.findItem(R.id.action_spinner);
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String title = sharedPref.getString(getString(R.string.title_pref), getString(R.string.app_title));
+        spinner.setTitle(title);
     }
 
     @Override
@@ -56,14 +72,16 @@ public class SortPosterFragment extends Fragment {
 
         int id = item.getItemId();
         if (id == R.id.menu_sort_popular) {
-            updateMovies(true);
-            editor.putBoolean(getString(R.string.sort_pref), true);
+            updateMovies(MOST_POPULAR);
+            editor.putString(getString(R.string.sort_pref), MOST_POPULAR);
+            editor.putString(getString(R.string.title_pref), getString(R.string.menu_most_popular));
             editor.apply();
             return true;
         }
         if (id == R.id.menu_sort_rating) {
-            updateMovies(false);
-            editor.putBoolean(getString(R.string.sort_pref), false);
+            updateMovies(TOP_RATED);
+            editor.putString(getString(R.string.sort_pref), TOP_RATED);
+            editor.putString(getString(R.string.title_pref), getString(R.string.menu_highest_rated));
             editor.apply();
             return true;
         }
@@ -73,7 +91,6 @@ public class SortPosterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // The ArrayAdapter will take data from a source and
         // use it to populate the GridView it's attached to.
         mMoviesAdapter = new MovieAdapter(
@@ -100,110 +117,27 @@ public class SortPosterFragment extends Fragment {
         return rootView;
     }
 
-    private void updateMovies(boolean popular) {
-        FetchMoviesPostersTask postersTask = new FetchMoviesPostersTask();
-        if (popular) {
-            postersTask.execute("popular");
-            getActivity().setTitle(R.string.title_popular);
-        } else {
-            postersTask.execute("top_rated");
-            getActivity().setTitle(R.string.title_rated);
+    public void onTaskCompleted(Movie[] movies) {
+        if (movies != null) {
+            mMoviesAdapter.clear();
+            for(Movie movie : movies) {
+                mMoviesAdapter.add(movie);
+            }
         }
+    }
+
+    private void updateMovies(String sortBy) {
+        FetchMoviesTask moviesTask = new FetchMoviesTask(this);
+        fetchMoviesTask = moviesTask;
+        moviesTask.execute(sortBy);
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        boolean isPopular = sharedPref.getBoolean(getString(R.string.sort_pref), true);
-        updateMovies(isPopular);
-    }
-
-    public class FetchMoviesPostersTask extends AsyncTask<String, Void, Movie[]> {
-
-        private final String LOG_TAG = FetchMoviesPostersTask.class.getSimpleName();
-
-        @Override
-        protected Movie[] doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            try {
-                final String MOVIEDB_BASE_URL = "http://api.themoviedb.org/3/movie";
-
-                Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
-                        .appendPath(params[0])
-                        .appendQueryParameter("api_key", BuildConfig.MOVIEDB_KEY)
-                        .build();
-
-                URL url = new URL(builtUri.toString());
-
-                // Create the request to theMovieDB, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                Movies movies = new Gson().fromJson(reader, Movies.class);
-
-                return movies.getMovies();
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Movie[] result) {
-            if (result != null) {
-                mMoviesAdapter.clear();
-                for(Movie movie : result) {
-                    mMoviesAdapter.add(movie);
-                }
-            }
-        }
-    }
-
-    private static class Movies {
-        @SuppressWarnings("unused")
-        @SerializedName("page")
-        private int mPage;
-
-        @SuppressWarnings("unused")
-        @SerializedName("results")
-        private Movie[] mMovies;
-
-        public Movie[] getMovies() {
-            return mMovies;
-        }
-
-        public int getPage() {
-            return mPage;
-        }
+        String sortBy = sharedPref.getString(getString(R.string.sort_pref), MOST_POPULAR);
+        updateMovies(sortBy);
     }
 }

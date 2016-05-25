@@ -19,6 +19,7 @@
         android:layout_marginTop="@dimen/textview_margin_top"
         android:background="@color/colorPrimaryTransclucent"
         android:ellipsize="marquee"
+        android:gravity="center"
         android:padding="@dimen/textview_padding"
         android:singleLine="true"
         android:textColor="@android:color/white" />

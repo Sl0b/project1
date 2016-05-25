@@ -1,9 +1,8 @@
 <resources>
-    <string name="title_popular">Most popular</string>
-    <string name="title_rated">Highest-rated</string>
+    <string name="app_title">UdaMovies</string>
 
     <string name="title_activity_detail">DetailActivity</string>
-    <string name="action_spinner">Sort</string>
+    <string name="action_spinner">Most popular</string>
 
     <string name="release_date">Release date:</string>
     <string name="vote_average">Average rating:</string>
@@ -11,9 +10,11 @@
     <string name="backdrop_description">image of the movie as a banner</string>
     <string name="poster_description">poster of the movie</string>
 
-    <string name="menu_most_popular">Sort by most popular</string>
-    <string name="menu_highest_rated">Sort by highest-rated</string>
+    <string name="menu_most_popular">Most popular</string>
+    <string name="menu_highest_rated">Highest-rated</string>
+    <string name="menu_favorites">Favorites</string>
 
-    <string name="sort_pref">sortByPopular</string>
+    <string name="sort_pref">sortBy</string>
+    <string name="title_pref">title</string>
 
 </resources>
