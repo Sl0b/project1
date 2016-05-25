@@ -43,8 +43,27 @@
                 android:layout_marginTop="@dimen/overview_top_margin"
                 android:background="@android:color/darker_gray" />
 
+            <Button
+                android:id="@+id/trailer_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trailer"
+                android:onClick="launchTrailer" />
+
             <TextView
                 android:id="@+id/movie_overview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/overview_top_margin" />
+
+            <TextView
+                android:id="@+id/review_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/overview_top_margin" />
+
+            <TextView
+                android:id="@+id/review"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/overview_top_margin" />

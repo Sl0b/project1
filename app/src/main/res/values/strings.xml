@@ -7,6 +7,7 @@
     <string name="release_date">Release date:</string>
     <string name="vote_average">Average rating:</string>
     <string name="votes">votes</string>
+    <string name="trailer">Trailer</string>
     <string name="backdrop_description">image of the movie as a banner</string>
     <string name="poster_description">poster of the movie</string>
 

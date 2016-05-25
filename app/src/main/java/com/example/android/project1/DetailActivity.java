@@ -2,6 +2,8 @@ package com.example.android.project1;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +25,10 @@ import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static FetchTrailerTask fetchTrailerTask;
+    private static FetchReviewsTask fetchReviewsTask;
     private static Movie mMovie;
+    private static String trailerUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,38 @@ public class DetailActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra("MOVIE")) {
             mMovie = new Gson().fromJson(intent.getStringExtra("MOVIE"), Movie.class);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((fetchTrailerTask != null) && (fetchTrailerTask.getStatus() == AsyncTask.Status.RUNNING)) {
+            fetchTrailerTask.setActivity(this);
+        }
+        if ((fetchReviewsTask != null) && (fetchReviewsTask.getStatus() == AsyncTask.Status.RUNNING)) {
+            fetchReviewsTask.setActivity(this);
+        }
+    }
+
+    public void onTrailerTaskCompleted(Trailer[] trailers) {
+        if (trailers != null) {
+            trailerUrl = trailers[0].getTrailerUrl();
+        }
+    }
+
+    public void onReviewTaskCompleted(Review[] reviews) {
+        TextView author = (TextView)findViewById(R.id.review_author);
+        TextView review = (TextView)findViewById(R.id.review);
+        if (reviews.length > 0) {
+            author.setText(reviews[0].getAuthor());
+            review.setText(reviews[0].getReview());
+        } else {
+            review.setText("There is no review, sorry.");
+        }
+    }
+
+    public void launchTrailer(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(trailerUrl)));
     }
 
     public static class DetailActivityFragment extends Fragment {
@@ -107,5 +144,20 @@ public class DetailActivity extends AppCompatActivity {
 
             return rootView;
         }
+    }
+
+    private void fetchTrailerAndReviews() {
+        FetchTrailerTask trailerTask = new FetchTrailerTask(this);
+        fetchTrailerTask = trailerTask;
+        trailerTask.execute(mMovie.getId());
+        FetchReviewsTask reviewsTask = new FetchReviewsTask(this);
+        fetchReviewsTask = reviewsTask;
+        reviewsTask.execute(mMovie.getId());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        fetchTrailerAndReviews();
     }
 }

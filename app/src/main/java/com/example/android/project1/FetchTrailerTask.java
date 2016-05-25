@@ -13,20 +13,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
+public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
 
-    private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+    private final String LOG_TAG = FetchTrailerTask.class.getSimpleName();
 
-    private SortPosterFragment activity;
-    private Movie[] movies;
+    private DetailActivity activity;
+    private Trailer[] trailers;
     private boolean completed;
 
-    public FetchMoviesTask(SortPosterFragment activity) {
+    public FetchTrailerTask(DetailActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    protected Movie[] doInBackground(String... params) {
+    protected Trailer[] doInBackground(String... params) {
 
         if (params.length == 0) {
             return null;
@@ -42,6 +42,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
 
             Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
                     .appendPath(params[0])
+                    .appendPath("videos")
                     .appendQueryParameter("api_key", BuildConfig.MOVIEDB_KEY)
                     .build();
 
@@ -60,9 +61,9 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            Movies movies = new Gson().fromJson(reader, Movies.class);
+            Trailers trailers = new Gson().fromJson(reader, Trailers.class);
 
-            return movies.getMovies();
+            return trailers.getTrailers();
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             return null;
@@ -81,19 +82,19 @@ public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
     }
 
     @Override
-    protected void onPostExecute(Movie[] result) {
-        movies = result;
+    protected void onPostExecute(Trailer[] result) {
+        trailers = result;
         completed = true;
         notifyActivityTaskCompleted();
     }
 
     private void notifyActivityTaskCompleted() {
         if ( null != activity ) {
-            activity.onTaskCompleted(movies);
+            activity.onTrailerTaskCompleted(trailers);
         }
     }
 
-    public void setActivity(SortPosterFragment activity) {
+    public void setActivity(DetailActivity activity) {
         this.activity = activity;
         if (completed) {
             notifyActivityTaskCompleted();

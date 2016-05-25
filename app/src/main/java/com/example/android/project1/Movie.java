@@ -17,7 +17,7 @@ public class Movie implements Parcelable {
     private static final String BACKDROP_LANDSCAPE_REZ = "/w500";
 
     @SerializedName("id")
-    private int mId;
+    private String mId;
 
     @SerializedName("title")
     private String mTitle;
@@ -40,7 +40,7 @@ public class Movie implements Parcelable {
     @SerializedName("vote_count")
     private int mVoteCount;
 
-    public int getId() {
+    public String getId() {
         return mId;
     }
 
@@ -86,7 +86,7 @@ public class Movie implements Parcelable {
 
     // Parcelable stuff
     private Movie(Parcel in) {
-        this.mId = in.readInt();
+        this.mId = in.readString();
         this.mTitle = in.readString();
         this.mOverview = in.readString();
         this.mPosterPath = in.readString();
@@ -98,7 +98,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mId);
+        dest.writeString(mId);
         dest.writeString(mTitle);
         dest.writeString(mOverview);
         dest.writeString(mPosterPath);
@@ -114,8 +114,7 @@ public class Movie implements Parcelable {
     }
 
 
-    static final Parcelable.Creator<Movie> CREATOR
-            = new Parcelable.Creator<Movie>() {
+    static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
 
         public Movie createFromParcel(Parcel in) {
             return new Movie(in);
