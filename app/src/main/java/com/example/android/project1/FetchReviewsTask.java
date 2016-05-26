@@ -17,11 +17,11 @@ public class FetchReviewsTask extends AsyncTask<String, Void, Review[]> {
 
     private final String LOG_TAG = FetchReviewsTask.class.getSimpleName();
 
-    private DetailActivity activity;
+    private DetailActivityFragment activity;
     private Review[] reviews;
     private boolean completed;
 
-    public FetchReviewsTask(DetailActivity activity) {
+    public FetchReviewsTask(DetailActivityFragment activity) {
         this.activity = activity;
     }
 
@@ -96,7 +96,7 @@ public class FetchReviewsTask extends AsyncTask<String, Void, Review[]> {
         }
     }
 
-    public void setActivity(DetailActivity activity) {
+    public void setActivity(DetailActivityFragment activity) {
         this.activity = activity;
         if (completed) {
             notifyActivityTaskCompleted();

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 public class SortPosterFragment extends Fragment {
 
     private static FetchMoviesTask fetchMoviesTask;
-    private Menu menu;
 
     public final static String MOST_POPULAR = "popular";
     public final static String TOP_RATED = "top_rated";
@@ -56,7 +55,7 @@ public class SortPosterFragment extends Fragment {
 
         MenuItem spinner = menu.findItem(R.id.action_spinner);
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String title = sharedPref.getString(getString(R.string.title_pref), getString(R.string.app_title));
+        String title = sharedPref.getString(getString(R.string.title_pref), getString(R.string.menu_most_popular));
         spinner.setTitle(title);
     }
 

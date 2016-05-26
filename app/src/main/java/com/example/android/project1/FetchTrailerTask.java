@@ -17,11 +17,11 @@ public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
 
     private final String LOG_TAG = FetchTrailerTask.class.getSimpleName();
 
-    private DetailActivity activity;
+    private DetailActivityFragment activity;
     private Trailer[] trailers;
     private boolean completed;
 
-    public FetchTrailerTask(DetailActivity activity) {
+    public FetchTrailerTask(DetailActivityFragment activity) {
         this.activity = activity;
     }
 
@@ -94,7 +94,7 @@ public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
         }
     }
 
-    public void setActivity(DetailActivity activity) {
+    public void setActivity(DetailActivityFragment activity) {
         this.activity = activity;
         if (completed) {
             notifyActivityTaskCompleted();

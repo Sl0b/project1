@@ -3,7 +3,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.project1.DetailActivity$DetailActivityFragment">
+    tools:context=".DetailActivityFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,18 +37,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/overview_top_margin"
-                android:background="@android:color/darker_gray" />
-
             <Button
                 android:id="@+id/trailer_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/overview_top_margin"
+                android:background="@color/colorPrimary"
                 android:text="@string/trailer"
-                android:onClick="launchTrailer" />
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/overview_top_margin"
+                android:gravity="center"
+                android:text="@string/overview_title"
+                android:textAppearance="?android:textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/movie_overview"
@@ -56,17 +60,40 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/overview_top_margin" />
 
-            <TextView
-                android:id="@+id/review_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/overview_top_margin" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/overview_top_margin"
+                android:background="@android:color/darker_gray" />
 
             <TextView
-                android:id="@+id/review"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/overview_top_margin" />
+                android:layout_marginTop="@dimen/overview_top_margin"
+                android:gravity="center"
+                android:text="@string/reviews_title"
+                android:textAppearance="?android:textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/no_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/reviews_placeholder"
+                android:visibility="gone" />
+
+            <ExpandableListView
+                android:id="@+id/reviews_listview"
+                android:nestedScrollingEnabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/overview_top_margin"
+                android:background="@android:color/darker_gray" />
 
         </LinearLayout>
 

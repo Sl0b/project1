@@ -8,6 +8,10 @@
     <string name="vote_average">Average rating:</string>
     <string name="votes">votes</string>
     <string name="trailer">Trailer</string>
+    <string name="overview_title">Overview</string>
+    <string name="reviews_title">Reviews</string>
+
+    <string name="reviews_placeholder">There is no reviews for this film, sorry.</string>
     <string name="backdrop_description">image of the movie as a banner</string>
     <string name="poster_description">poster of the movie</string>
 
