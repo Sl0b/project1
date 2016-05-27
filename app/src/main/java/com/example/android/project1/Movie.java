@@ -35,10 +35,23 @@ public class Movie implements Parcelable {
     private String mReleaseDate;
 
     @SerializedName("vote_average")
-    private float mVoteAverage;
+    private String mVoteAverage;
 
     @SerializedName("vote_count")
-    private int mVoteCount;
+    private String mVoteCount;
+
+    public Movie(String id, String title, String overview, String poster, String backdrop,
+                 String releaseDate, String voteAverage, String voteCount) {
+        mId = id;
+        mTitle = title;
+        mOverview = overview;
+        mPosterPath = poster;
+        mBackdrop = backdrop;
+        mReleaseDate = releaseDate;
+        mVoteAverage = voteAverage;
+        mVoteCount = voteCount;
+
+    }
 
     public String getId() {
         return mId;
@@ -76,11 +89,11 @@ public class Movie implements Parcelable {
         return TextUtils.isEmpty(mReleaseDate) ? "" : mReleaseDate;
     }
 
-    public float getVoteAverage() {
+    public String getVoteAverage() {
         return mVoteAverage;
     }
 
-    public int getVoteCount() {
+    public String getVoteCount() {
         return mVoteCount;
     }
 
@@ -92,8 +105,8 @@ public class Movie implements Parcelable {
         this.mPosterPath = in.readString();
         this.mBackdrop = in.readString();
         this.mReleaseDate = in.readString();
-        this.mVoteAverage = in.readFloat();
-        this.mVoteCount = in.readInt();
+        this.mVoteAverage = in.readString();
+        this.mVoteCount = in.readString();
     }
 
     @Override
@@ -104,8 +117,8 @@ public class Movie implements Parcelable {
         dest.writeString(mPosterPath);
         dest.writeString(mBackdrop);
         dest.writeString(mReleaseDate);
-        dest.writeFloat(mVoteAverage);
-        dest.writeInt(mVoteCount);
+        dest.writeString(mVoteAverage);
+        dest.writeString(mVoteCount);
     }
 
     @Override

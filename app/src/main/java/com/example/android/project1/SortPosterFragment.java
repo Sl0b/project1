@@ -3,9 +3,13 @@ package com.example.android.project1;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.android.project1.data.MovieContract;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -22,7 +27,9 @@ import java.util.ArrayList;
 /**
  * Created by sl0b on 23/03/16.
  */
-public class SortPosterFragment extends Fragment {
+public class SortPosterFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private final String LOG_TAG = SortPosterFragment.class.getSimpleName();
 
     private static FetchMoviesTask fetchMoviesTask;
 
@@ -32,7 +39,8 @@ public class SortPosterFragment extends Fragment {
 
     private MovieAdapter mMoviesAdapter;
 
-    public SortPosterFragment() {}
+    public SortPosterFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +92,13 @@ public class SortPosterFragment extends Fragment {
             editor.apply();
             return true;
         }
+        if (id == R.id.menu_sort_favorite) {
+            updateMovies(FAVORITES);
+            editor.putString(getString(R.string.sort_pref), FAVORITES);
+            editor.putString(getString(R.string.title_pref), getString(R.string.menu_favorites));
+            editor.apply();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -106,29 +121,65 @@ public class SortPosterFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String movie = new Gson().toJson(mMoviesAdapter.getItem(position));
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("MOVIE", movie);
-                startActivity(intent);
+                if (getActivity().findViewById(R.id.detail_container) != null) {
+                    Movie movie = mMoviesAdapter.getItem(position);
+                    Bundle arguments = new Bundle();
+                    arguments.putParcelable(DetailActivityFragment.ARG_MOVIE, movie);
+                    DetailActivityFragment fragment = new DetailActivityFragment();
+                    fragment.setArguments(arguments);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.detail_container, fragment)
+                            .commit();
+                } else {
+                    String movie = new Gson().toJson(mMoviesAdapter.getItem(position));
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra("MOVIE", movie);
+                    startActivity(intent);
+                }
             }
         });
 
         return rootView;
     }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        mMoviesAdapter.clear();
+        mMoviesAdapter.add(cursor);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(getActivity(),
+                MovieContract.MovieEntry.CONTENT_URI,
+                MovieContract.MovieEntry.MOVIE_COLUMNS,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        // Not used
+    }
+
     public void onTaskCompleted(Movie[] movies) {
         if (movies != null) {
             mMoviesAdapter.clear();
-            for(Movie movie : movies) {
+            for (Movie movie : movies) {
                 mMoviesAdapter.add(movie);
             }
         }
     }
 
     private void updateMovies(String sortBy) {
-        FetchMoviesTask moviesTask = new FetchMoviesTask(this);
-        fetchMoviesTask = moviesTask;
-        moviesTask.execute(sortBy);
+        if (sortBy.equals(FAVORITES)) {
+            getActivity().getSupportLoaderManager().initLoader(0, null, this);
+        } else {
+            FetchMoviesTask moviesTask = new FetchMoviesTask(this);
+            fetchMoviesTask = moviesTask;
+            moviesTask.execute(sortBy);
+        }
         getActivity().invalidateOptionsMenu();
     }
 

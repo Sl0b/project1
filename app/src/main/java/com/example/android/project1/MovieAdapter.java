@@ -2,6 +2,7 @@ package com.example.android.project1;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.project1.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -63,5 +65,24 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
     {
         ImageView poster;
         TextView title;
+    }
+
+    public void add(Cursor cursor) {
+        data.clear();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String id = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_ID);
+                String title = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_TITLE);
+                String overview = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_OVERVIEW);
+                String posterPath = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_POSTER_PATH);
+                String backdropPath = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_BACKDROP_PATH);
+                String releaseDate = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_RELEASE_DATE);
+                String rating = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_VOTE_AVERAGE);
+                String count = cursor.getString(MovieContract.MovieEntry.COL_MOVIE_VOTE_COUNT);
+                Movie movie = new Movie(id, title, overview, posterPath, backdropPath, releaseDate, rating, count);
+                data.add(movie);
+            } while (cursor.moveToNext());
+        }
+        notifyDataSetChanged();
     }
 }

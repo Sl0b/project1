@@ -1,11 +1,14 @@
 package com.example.android.project1;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +19,9 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.android.project1.data.MovieContract;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +48,10 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
     List<String> listDataHeader;
     HashMap<String, List<String>> listDataChild;
 
+    Button mFav;
+
     private final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
+    public static final String ARG_MOVIE = "ARG_MOVIE";
 
     public DetailActivityFragment() {
     }
@@ -53,6 +59,12 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getActivity().findViewById(R.id.detail_container) != null) {
+            if (getArguments().containsKey(ARG_MOVIE)) {
+                mMovie = getArguments().getParcelable(ARG_MOVIE);
+            }
+        }
 
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
@@ -107,6 +119,11 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
             case R.id.trailer_button:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(trailerUrl)));
                 break;
+            case R.id.fav_button:
+                if (!isFavorite())
+                    addToFavorite();
+                else removeFromFavorites();
+                break;
         }
     }
 
@@ -146,6 +163,11 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
             }
         });
 
+        mFav = (Button) rootView.findViewById(R.id.fav_button);
+        mFav.setOnClickListener(this);
+
+        updateFavoriteButton();
+
         Button trailer = (Button) rootView.findViewById(R.id.trailer_button);
         trailer.setOnClickListener(this);
 
@@ -162,10 +184,6 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
                     .error(R.drawable.backdrop_error)
                     .into(backdrop);
         }
-
-        final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
-
-        scrollView.postDelayed(new Runnable() { @Override public void run() { scrollView.fullScroll(View.FOCUS_DOWN); } }, 1000);
 
         // Movie title
         ((TextView) rootView.findViewById(R.id.movie_title))
@@ -202,6 +220,100 @@ public class DetailActivityFragment extends Fragment implements OnClickListener 
                 .setText(mMovie.getOverview());
 
         return rootView;
+    }
+
+    public void addToFavorite() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (!isFavorite()) {
+                    ContentValues movieValues = new ContentValues();
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                            mMovie.getId());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                            mMovie.getTitle());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                            mMovie.getOverview());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
+                            mMovie.getImageUrl(true, false));
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
+                            mMovie.getImageUrl(false, true));
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+                            mMovie.getReleaseDate());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_AVERAGE,
+                            mMovie.getVoteAverage());
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT,
+                            mMovie.getVoteCount());
+                    getContext().getContentResolver().insert(
+                            MovieContract.MovieEntry.CONTENT_URI,
+                            movieValues
+                    );
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                updateFavoriteButton();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void removeFromFavorites() {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (isFavorite()) {
+                    getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.getId(), null);
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                updateFavoriteButton();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void updateFavoriteButton() {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                return isFavorite();
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isFavorite) {
+                if (isFavorite) {
+                    mFav.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorAccent));
+                } else {
+                    mFav.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private boolean isFavorite() {
+        Cursor movieCursor = getContext().getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = " + mMovie.getId(),
+                null,
+                null);
+
+        if (movieCursor != null && movieCursor.moveToFirst()) {
+            movieCursor.close();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void setListViewHeight(ListView listView) {

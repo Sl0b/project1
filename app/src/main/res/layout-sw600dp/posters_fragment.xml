@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivity$SortPosterFragment">
+
+    <GridView
+        android:id="@+id/gridview_posters"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:columnWidth="@dimen/gridview_column_width"
+        android:numColumns="auto_fit"
+        android:horizontalSpacing="@dimen/gridview_spacing"
+        android:verticalSpacing="@dimen/gridview_spacing" />
+
+    <FrameLayout
+        android:id="@+id/detail_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+</LinearLayout>

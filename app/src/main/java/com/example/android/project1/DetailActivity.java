@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private final String LOG_TAG = DetailActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
